@@ -1,0 +1,10 @@
+[build]
+target = "build\\x86_64-rust_os_journey.json"
+target-dir = "target"
+
+[unstable]
+build-std-features = ["compiler-builtins-mem"]
+build-std = ["core", "compiler_builtins"]
+
+[target.'cfg(target_os = "none")']
+runner = "bootimage runner"
