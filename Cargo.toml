@@ -22,3 +22,7 @@ test-args = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "st
 # recognizes the success case and does not count the test as failed.
 test-success-exit-code = 33
 test-timeout = 300
+
+[[test]]
+name = "should_panic"
+harness = false
