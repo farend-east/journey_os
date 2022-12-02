@@ -11,9 +11,12 @@ use rust_os_journey::println;
 pub extern "C" fn _start() -> ! {
     println!("Hello World{}", "!");
 
+    rust_os_journey::init();
+
     #[cfg(test)]
     test_main();
 
+    println!("Running");
     loop {}
 }
 
