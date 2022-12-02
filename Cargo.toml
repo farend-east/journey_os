@@ -17,7 +17,7 @@ uart_16550 = "0.2.18"
 # The isa-debug-exit device uses port-mapped I/O. The iobase parameter specifies on which port address 
 # the device should live (0xf4 is a generally unused port on the x86’s IO bus) and the iosize specifies 
 # the port size (0x04 means four bytes).
-test-args = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio"]
+test-args = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio", "-display", "none"]
 # With this configuration, bootimage maps our success exit code to exit code 0, so that cargo test correctly 
 # recognizes the success case and does not count the test as failed.
 test-success-exit-code = 33
