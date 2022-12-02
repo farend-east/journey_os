@@ -6,7 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bootloader = "0.9.23" # Version newer than '0.9.23' does not support cargo bootimage
+# Version newer than '0.9.23' does not support cargo bootimage
+bootloader = { version = "0.9.23", features = ["map_physical_memory"] } 
 volatile = "0.2.6" # Newer version will require update to VGA buffer 'ScreenChar' implementation
 lazy_static = { version = "1.0", features = ["spin_no_std"] }
 spin = "0.9.4"
