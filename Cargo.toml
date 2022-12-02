@@ -10,9 +10,13 @@ bootloader = "0.9.23" # Version newer than '0.9.23' does not support cargo booti
 volatile = "0.2.6" # Newer version will require update to VGA buffer 'ScreenChar' implementation
 lazy_static = { version = "1.0", features = ["spin_no_std"] }
 spin = "0.9.4"
+x86_64 = "0.14.10"
 
-[profile.dev]
-panic = "abort"
-
-[profile.release]
-panic = "abort"
+[package.metadata.bootimage]
+# The isa-debug-exit device uses port-mapped I/O. The iobase parameter specifies on which port address 
+# the device should live (0xf4 is a generally unused port on the x86’s IO bus) and the iosize specifies 
+# the port size (0x04 means four bytes).
+test-args = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04"]
+# With this configuration, bootimage maps our success exit code to exit code 0, so that cargo test correctly 
+# recognizes the success case and does not count the test as failed.
+test-success-exit-code = 33
