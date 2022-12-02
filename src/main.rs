@@ -81,5 +81,5 @@ fn test_runner(tests: &[&dyn Testable]) {
 
 #[test_case]
 fn trivial_assertion() {
-    assert_eq!(1, 0);
+    assert_eq!(1, 1);
 }
