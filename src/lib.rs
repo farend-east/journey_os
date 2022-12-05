@@ -2,11 +2,12 @@
 #![cfg_attr(test, no_main)]
 #![feature(abi_x86_interrupt)]
 #![feature(custom_test_frameworks)]
-#![feature(alloc_error_handler)] // at the top of the file
+#![feature(alloc_error_handler)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
+use x86_64::instructions::port::Port;
 
 extern crate alloc;
 
@@ -44,15 +45,13 @@ pub enum QemuExitCode {
 }
 
 pub fn exit_qemu(exit_code: QemuExitCode) {
-    use x86_64::instructions::port::Port;
-
     unsafe {
         let mut port = Port::new(0xf4);
         port.write(exit_code as u32);
     }
 }
-
 pub trait Testable {
+    #[allow(clippy::unused_unit)]
     fn run(&self) -> ();
 }
 

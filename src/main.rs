@@ -8,14 +8,11 @@ extern crate alloc;
 
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
-use x86_64::{ VirtAddr};
+use x86_64::VirtAddr;
 
-use rust_os_journey::println;
-use rust_os_journey::task::Task;
-use rust_os_journey::task::executor::Executor;
-use rust_os_journey::allocator;
 use rust_os_journey::memory::{self, BootInfoFrameAllocator};
-use rust_os_journey::task::keyboard;
+use rust_os_journey::task::{executor::Executor, keyboard, Task};
+use rust_os_journey::{allocator, println};
 
 entry_point!(kernel_main);
 
@@ -39,8 +36,9 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.run();
 
-    println!("Exiting");
-    rust_os_journey::hlt_loop();
+    // These are unreachable as our task executor currently is blocking the main thread.
+    // println!("Exiting");
+    // rust_os_journey::hlt_loop();
 }
 
 async fn async_number() -> u32 {

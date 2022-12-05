@@ -1,14 +1,19 @@
 use super::{Task, TaskId};
-use alloc::task::Wake;
-use alloc::{collections::BTreeMap, sync::Arc};
-use core::task::Waker;
-use core::task::{Context, Poll};
+use alloc::{collections::BTreeMap, sync::Arc, task::Wake};
+use core::task::{Context, Poll, Waker};
 use crossbeam_queue::ArrayQueue;
+use x86_64::instructions::interrupts::{self, enable_and_hlt};
 
 pub struct Executor {
     tasks: BTreeMap<TaskId, Task>,
     task_queue: Arc<ArrayQueue<TaskId>>,
     waker_cache: BTreeMap<TaskId, Waker>,
+}
+
+impl Default for Executor {
+    fn default() -> Self {
+        Executor::new()
+    }
 }
 
 impl Executor {
@@ -64,8 +69,6 @@ impl Executor {
     }
 
     fn sleep_if_idle(&self) {
-        use x86_64::instructions::interrupts::{self, enable_and_hlt};
-
         interrupts::disable();
         if self.task_queue.is_empty() {
             enable_and_hlt();
@@ -81,6 +84,7 @@ struct TaskWaker {
 }
 
 impl TaskWaker {
+    #[allow(clippy::new_ret_no_self)]
     fn new(task_id: TaskId, task_queue: Arc<ArrayQueue<TaskId>>) -> Waker {
         Waker::from(Arc::new(TaskWaker {
             task_id,

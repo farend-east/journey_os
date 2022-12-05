@@ -4,20 +4,19 @@ use core::{
     task::{Context, Poll},
 };
 use crossbeam_queue::ArrayQueue;
-use futures_util::stream::Stream;
+use futures_util::stream::{Stream, StreamExt};
 use futures_util::task::AtomicWaker;
-use futures_util::stream::StreamExt;
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
 
-use crate::print;
-use crate::println;
+use crate::{print, println};
 
 static WAKER: AtomicWaker = AtomicWaker::new();
 static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
 
 pub async fn print_keypresses() {
     let mut scancodes = ScancodeStream::new();
-    let mut keyboard:Keyboard<layouts::Us104Key, ScancodeSet1> = Keyboard::new(HandleControl::MapLettersToUnicode);
+    let mut keyboard: Keyboard<layouts::Us104Key, ScancodeSet1> =
+        Keyboard::new(HandleControl::MapLettersToUnicode);
 
     while let Some(scancode) = scancodes.next().await {
         if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
@@ -36,7 +35,7 @@ pub async fn print_keypresses() {
 /// Must not block or allocate.
 pub(crate) fn add_scancode(scancode: u8) {
     if let Ok(queue) = SCANCODE_QUEUE.try_get() {
-        if let Err(_) = queue.push(scancode) {
+        if queue.push(scancode).is_err() {
             println!("WARNING: scancode queue full; dropping keyboard input");
         } else {
             WAKER.wake();
@@ -59,6 +58,12 @@ impl ScancodeStream {
     }
 }
 
+impl Default for ScancodeStream {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Stream for ScancodeStream {
     type Item = u8;
 
@@ -72,7 +77,7 @@ impl Stream for ScancodeStream {
             return Poll::Ready(Some(scancode));
         }
 
-        WAKER.register(&cx.waker());
+        WAKER.register(cx.waker());
         match queue.pop() {
             Ok(scancode) => {
                 WAKER.take();
