@@ -1,5 +1,3 @@
-use alloc::alloc::{GlobalAlloc, Layout};
-use core::ptr::null_mut;
 use linked_list_allocator::LockedHeap;
 use x86_64::{
     structures::paging::{
