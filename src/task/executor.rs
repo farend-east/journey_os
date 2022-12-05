@@ -31,6 +31,7 @@ impl Executor {
     pub fn run(&mut self) -> ! {
         loop {
             self.run_ready_tasks();
+            self.sleep_if_idle();
         }
     }
 
@@ -59,6 +60,17 @@ impl Executor {
                 }
                 Poll::Pending => {}
             }
+        }
+    }
+
+    fn sleep_if_idle(&self) {
+        use x86_64::instructions::interrupts::{self, enable_and_hlt};
+
+        interrupts::disable();
+        if self.task_queue.is_empty() {
+            enable_and_hlt();
+        } else {
+            interrupts::enable();
         }
     }
 }
