@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
-#![test_runner(rust_os_journey::test_runner)]
+#![test_runner(journey_kernel::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
 extern crate alloc;
@@ -12,23 +12,23 @@ use core::panic::PanicInfo;
 entry_point!(main);
 
 fn main(boot_info: &'static mut BootInfo) -> ! {
-    use rust_os_journey::allocator;
-    use rust_os_journey::memory::{self, BootInfoFrameAllocator};
+    use journey_kernel::allocator;
+    use journey_kernel::memory::{self, BootInfoFrameAllocator};
     use x86_64::VirtAddr;
 
-    rust_os_journey::init();
+    journey_kernel::init();
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset.into_option().unwrap());
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_regions) };
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
     test_main();
-    rust_os_journey::hlt_loop();
+    journey_kernel::hlt_loop();
 }
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    rust_os_journey::test_panic_handler(info)
+    journey_kernel::test_panic_handler(info)
 }
 
 use alloc::boxed::Box;
@@ -53,7 +53,7 @@ fn large_vec() {
     assert_eq!(vec.iter().sum::<u64>(), (n - 1) * n / 2);
 }
 
-use rust_os_journey::allocator::HEAP_SIZE;
+use journey_kernel::allocator::HEAP_SIZE;
 
 #[test_case]
 fn many_boxes() {

@@ -1,3 +1,0 @@
-{
-    "rust-analyzer.cargo.target": "kernel\\build\\x86_64-rust_os_journey.json",
-}

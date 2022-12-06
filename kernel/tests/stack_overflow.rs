@@ -7,13 +7,13 @@ use lazy_static::lazy_static;
 use x86_64::structures::idt::InterruptDescriptorTable;
 use x86_64::structures::idt::InterruptStackFrame;
 
-use rust_os_journey::{exit_qemu, serial_print, serial_println, QemuExitCode};
+use journey_kernel::{exit_qemu, serial_print, serial_println, QemuExitCode};
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     serial_print!("stack_overflow::stack_overflow...\t");
 
-    rust_os_journey::gdt::init();
+    journey_kernel::gdt::init();
     init_test_idt();
 
     // trigger a stack overflow
@@ -24,7 +24,7 @@ pub extern "C" fn _start() -> ! {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    rust_os_journey::test_panic_handler(info)
+    journey_kernel::test_panic_handler(info)
 }
 use core::ops::{Deref, DerefMut};
 
@@ -56,7 +56,7 @@ lazy_static! {
         unsafe {
             idt.double_fault
                 .set_handler_fn(test_double_fault_handler)
-                .set_stack_index(rust_os_journey::gdt::DOUBLE_FAULT_IST_INDEX);
+                .set_stack_index(journey_kernel::gdt::DOUBLE_FAULT_IST_INDEX);
         }
 
         idt
@@ -73,5 +73,5 @@ extern "x86-interrupt" fn test_double_fault_handler(
 ) -> ! {
     serial_println!("[ok]");
     exit_qemu(QemuExitCode::Success);
-    rust_os_journey::hlt_loop();
+    journey_kernel::hlt_loop();
 }
