@@ -1,5 +1,5 @@
-use core::fmt;
-use core::fmt::Write;
+use core::fmt::{self, Write};
+use core::ops::{Deref, DerefMut};
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
@@ -45,6 +45,19 @@ impl ColorCode {
 struct ScreenChar {
     ascii_character: u8,
     color_code: ColorCode,
+}
+
+impl Deref for ScreenChar {
+    type Target = ScreenChar;
+    fn deref(&self) -> &Self::Target {
+        self
+    }
+}
+
+impl DerefMut for ScreenChar {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self
+    }
 }
 
 #[repr(transparent)]

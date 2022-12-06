@@ -26,11 +26,28 @@ pub extern "C" fn _start() -> ! {
 fn panic(info: &PanicInfo) -> ! {
     rust_os_journey::test_panic_handler(info)
 }
+use core::ops::{Deref, DerefMut};
+
+#[derive(Copy, Clone)]
+struct Dummy(u8);
+
+impl Deref for Dummy {
+    type Target = Dummy;
+    fn deref(&self) -> &Self::Target {
+        self
+    }
+}
+
+impl DerefMut for Dummy {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self
+    }
+}
 
 #[allow(unconditional_recursion)]
 fn stack_overflow() {
     stack_overflow(); // for each recursion, the return address is pushed
-    volatile::Volatile::new(0).read(); // prevent tail recursion optimizations
+    volatile::Volatile::new(Dummy(0)).read(); // prevent tail recursion optimizations
 }
 
 lazy_static! {
