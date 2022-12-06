@@ -18,7 +18,7 @@ pc-keyboard = "0.6.1"
 linked_list_allocator = "0.10.4"
 crossbeam-queue = { version = "0.3.8", default-features = false, features = ["alloc"] }
 conquer-once = { version = "0.3.2", default-features = false }
-futures-util = { version = "0.3.4", default-features = false, features = ["alloc"] }
+futures-util = { version = "0.3.25", default-features = false, features = ["alloc"] }
 
 [package.metadata.bootimage]
 # The isa-debug-exit device uses port-mapped I/O. The iobase parameter specifies on which port address 
