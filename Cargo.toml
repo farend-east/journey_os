@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 # Version newer than '0.9.23' does not support cargo bootimage
 bootloader = { version = "0.9.23", features = ["map_physical_memory"] } 
+bootloader_api = "0.11.0"
 volatile = "0.4.5"
 lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 spin = "0.9.4"

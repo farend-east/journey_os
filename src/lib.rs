@@ -19,6 +19,14 @@ pub mod serial;
 pub mod task;
 pub mod vga_buffer;
 
+use bootloader_api::{config::Mapping, BootloaderConfig};
+
+pub const BOOTLOADER_CONFIG: BootloaderConfig = {
+    let mut config = BootloaderConfig::new_default();
+    config.mappings.physical_memory = Some(Mapping::FixedAddress(0x0000_4000_0000_0000));
+    config
+};
+
 pub fn init() {
     gdt::init();
     interrupts::init_idt();
@@ -82,14 +90,14 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 }
 
 #[cfg(test)]
-use bootloader::{entry_point, BootInfo};
+use bootloader_api::{entry_point, BootInfo};
 
 #[cfg(test)]
 entry_point!(test_kernel_main);
 
 /// Entry point for `cargo test`
 #[cfg(test)]
-fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
+fn test_kernel_main(_boot_info: &'static mut BootInfo) -> ! {
     // like before
     init();
     test_main();
