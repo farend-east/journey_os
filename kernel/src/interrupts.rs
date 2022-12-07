@@ -44,12 +44,12 @@ extern "x86-interrupt" fn double_fault_handler(
     panic!("EXCEPTION: DOUBLE FAULT\n{:#?}", stack_frame);
 }
 
-extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    unsafe {
-        PICS.lock()
-            .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
-    }
-}
+// extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
+//     unsafe {
+//         PICS.lock()
+//             .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
+//     }
+// }
 
 extern "x86-interrupt" fn page_fault_handler(
     stack_frame: InterruptStackFrame,
@@ -62,33 +62,33 @@ extern "x86-interrupt" fn page_fault_handler(
     hlt_loop();
 }
 
-extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    let mut port = Port::new(0x60);
-    let scancode: u8 = unsafe { port.read() };
-    crate::task::keyboard::add_scancode(scancode);
+// extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
+//     let mut port = Port::new(0x60);
+//     let scancode: u8 = unsafe { port.read() };
+//     crate::task::keyboard::add_scancode(scancode);
 
-    unsafe {
-        PICS.lock()
-            .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
-    }
-}
+//     unsafe {
+//         PICS.lock()
+//             .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
+//     }
+// }
 
-#[derive(Debug, Clone, Copy)]
-#[repr(u8)]
-pub enum InterruptIndex {
-    Timer = PIC_1_OFFSET,
-    Keyboard,
-}
+// #[derive(Debug, Clone, Copy)]
+// #[repr(u8)]
+// pub enum InterruptIndex {
+//     Timer = PIC_1_OFFSET,
+//     Keyboard,
+// }
 
-impl InterruptIndex {
-    fn as_u8(self) -> u8 {
-        self as u8
-    }
+// impl InterruptIndex {
+//     fn as_u8(self) -> u8 {
+//         self as u8
+//     }
 
-    fn as_usize(self) -> usize {
-        usize::from(self.as_u8())
-    }
-}
+//     fn as_usize(self) -> usize {
+//         usize::from(self.as_u8())
+//     }
+// }
 
 #[test_case]
 fn test_breakpoint_exception() {
