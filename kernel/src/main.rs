@@ -6,7 +6,6 @@
 
 extern crate alloc;
 
-use bootloader_api::info::FrameBuffer;
 use bootloader_api::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use x86_64::VirtAddr;
@@ -16,12 +15,10 @@ use journey_kernel::task::{executor::Executor, keyboard, Task};
 use journey_kernel::{allocator, println, BOOTLOADER_CONFIG};
 
 entry_point!(kernel_main, config = &BOOTLOADER_CONFIG);
-// entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
-    // println!("Hello World{}", "!");
-
-    // journey_kernel::init();
+    journey_kernel::init(boot_info);
+    log::info!("Running");
 
     // let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset.into_option().unwrap());
     // let mut mapper = unsafe { memory::init(phys_mem_offset) };
@@ -29,9 +26,11 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
 
     // allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
-    // #[cfg(test)]
-    // test_main();
-    //println!("Running");
+    // Run test harnest for `cargo test`
+    #[cfg(test)]
+    test_main();
+
+    println!("Hello {}", "World");
 
     // let mut executor = Executor::new();
     // executor.spawn(Task::new(example_task()));
@@ -39,7 +38,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     // executor.run();
 
     // These are unreachable as our task executor currently is blocking the main thread.
-    //println!("Exiting");
+    log::info!("Halting");
     journey_kernel::hlt_loop();
 }
 
@@ -49,14 +48,14 @@ async fn async_number() -> u32 {
 
 async fn example_task() {
     let number = async_number().await;
-    println!("async number: {}", number);
+    log::info!("async number: {}", number);
 }
 
 /// This function is called on panic.
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
+    log::error!("{}", info);
     journey_kernel::hlt_loop();
 }
 

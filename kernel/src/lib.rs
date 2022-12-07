@@ -6,6 +6,7 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use bootloader_api::{config::Mapping, BootInfo, BootloaderConfig};
 use core::panic::PanicInfo;
 use x86_64::instructions::port::Port;
 
@@ -14,12 +15,11 @@ extern crate alloc;
 pub mod allocator;
 pub mod gdt;
 pub mod interrupts;
+pub mod logger;
 pub mod memory;
+pub mod screen;
 pub mod serial;
 pub mod task;
-pub mod vga_buffer;
-
-use bootloader_api::{config::Mapping, BootloaderConfig};
 
 pub const BOOTLOADER_CONFIG: BootloaderConfig = {
     let mut config = BootloaderConfig::new_default();
@@ -27,11 +27,22 @@ pub const BOOTLOADER_CONFIG: BootloaderConfig = {
     config
 };
 
-pub fn init() {
+pub fn init(boot_info: &'static mut BootInfo) {
     gdt::init();
     interrupts::init_idt();
-    unsafe { interrupts::PICS.lock().initialize() };
-    x86_64::instructions::interrupts::enable();
+
+    let frame_buffer = boot_info
+        .framebuffer
+        .as_mut()
+        .expect("FrameBuffer not available");
+
+    let info = frame_buffer.info();
+
+    screen::init(frame_buffer.buffer_mut(), info);
+    logger::init(info);
+
+    // unsafe { interrupts::PICS.lock().initialize() };
+    // x86_64::instructions::interrupts::enable();
 }
 
 #[alloc_error_handler]
@@ -90,16 +101,15 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 }
 
 #[cfg(test)]
-use bootloader_api::{entry_point, BootInfo};
+use bootloader_api::entry_point;
 
 #[cfg(test)]
 entry_point!(test_kernel_main);
 
 /// Entry point for `cargo test`
 #[cfg(test)]
-fn test_kernel_main(_boot_info: &'static mut BootInfo) -> ! {
-    // like before
-    init();
+fn test_kernel_main(boot_info: &'static mut BootInfo) -> ! {
+    init(boot_info);
     test_main();
     hlt_loop();
 }
