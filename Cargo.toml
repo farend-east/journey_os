@@ -1,6 +1,15 @@
 [package]
 name = "journey_os"
+description = "An OS built from the guide in https://os.phil-opp.com/"
 version = "0.1.0"
+authors = ["Fadhli Azhari"]
+
+[workspace]
+members = [
+    "kernel",
+    "tests/runner",
+    "tests/test_kernels/basic",
+]
 
 [build-dependencies]
 bootloader = "0.11.0"
@@ -10,5 +19,6 @@ journey_kernel = { path = "kernel", artifact = "bin", target = "x86_64-unknown-n
 # used for UEFI booting in QEMU
 ovmf-prebuilt = "0.1.0-alpha.1"
 
-[workspace]
-members = ["kernel"]
+[dev-dependencies]
+test_runner = { path = "tests/runner" }
+test_basic = { path = "tests/test_kernels/basic", artifact = "bin", target = "x86_64-unknown-none" }

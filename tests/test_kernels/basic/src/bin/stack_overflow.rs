@@ -2,31 +2,30 @@
 #![no_main]
 #![feature(abi_x86_interrupt)]
 
+use bootloader_api::{entry_point, BootInfo};
+use core::ops::{Deref, DerefMut};
 use core::panic::PanicInfo;
 use lazy_static::lazy_static;
 use x86_64::structures::idt::InterruptDescriptorTable;
 use x86_64::structures::idt::InterruptStackFrame;
 
-use journey_kernel::{exit_qemu, serial_print, serial_println, QemuExitCode};
+use journey_kernel::{exit_qemu, QemuExitCode};
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    serial_print!("stack_overflow::stack_overflow...\t");
+entry_point!(kernel_main);
 
+fn kernel_main(_boot_info: &'static mut BootInfo) -> ! {
     journey_kernel::gdt::init();
     init_test_idt();
 
     // trigger a stack overflow
     stack_overflow();
-
-    panic!("Execution continued after stack overflow");
+    exit_qemu(QemuExitCode::Failed);
 }
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     journey_kernel::test_panic_handler(info)
 }
-use core::ops::{Deref, DerefMut};
 
 #[derive(Copy, Clone)]
 struct Dummy(u8);
@@ -71,7 +70,5 @@ extern "x86-interrupt" fn test_double_fault_handler(
     _stack_frame: InterruptStackFrame,
     _error_code: u64,
 ) -> ! {
-    serial_println!("[ok]");
     exit_qemu(QemuExitCode::Success);
-    journey_kernel::hlt_loop();
 }
