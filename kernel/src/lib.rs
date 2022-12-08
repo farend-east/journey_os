@@ -14,6 +14,7 @@ use x86_64::{instructions::port::Port, VirtAddr};
 extern crate alloc;
 
 pub mod allocator;
+pub mod apic;
 pub mod gdt;
 pub mod interrupts;
 pub mod logger;
@@ -49,6 +50,7 @@ pub fn init(boot_info: &'static mut BootInfo) {
 
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
+    apic::init();
     // unsafe { interrupts::PICS.lock().initialize() };
     // x86_64::instructions::interrupts::enable();
 }
