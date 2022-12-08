@@ -8,11 +8,9 @@ extern crate alloc;
 
 use bootloader_api::{entry_point, BootInfo};
 use core::panic::PanicInfo;
-use x86_64::VirtAddr;
 
-use journey_kernel::memory::{self, BootInfoFrameAllocator};
 use journey_kernel::task::{executor::Executor, keyboard, Task};
-use journey_kernel::{allocator, println, BOOTLOADER_CONFIG};
+use journey_kernel::{println, BOOTLOADER_CONFIG};
 
 entry_point!(kernel_main, config = &BOOTLOADER_CONFIG);
 
@@ -20,26 +18,20 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     journey_kernel::init(boot_info);
     log::info!("Running");
 
-    // let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset.into_option().unwrap());
-    // let mut mapper = unsafe { memory::init(phys_mem_offset) };
-    // let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_regions) };
-
-    // allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
-
     // Run test harnest for `cargo test`
     #[cfg(test)]
     test_main();
 
     println!("Hello {}", "World");
 
-    // let mut executor = Executor::new();
-    // executor.spawn(Task::new(example_task()));
-    // executor.spawn(Task::new(keyboard::print_keypresses()));
-    // executor.run();
+    let mut executor = Executor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.run();
 
     // These are unreachable as our task executor currently is blocking the main thread.
-    log::info!("Halting");
-    journey_kernel::hlt_loop();
+    // log::info!("Halting");
+    // journey_kernel::hlt_loop();
 }
 
 async fn async_number() -> u32 {

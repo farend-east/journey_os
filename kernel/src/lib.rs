@@ -8,7 +8,8 @@
 
 use bootloader_api::{config::Mapping, BootInfo, BootloaderConfig};
 use core::panic::PanicInfo;
-use x86_64::instructions::port::Port;
+use memory::BootInfoFrameAllocator;
+use x86_64::{instructions::port::Port, VirtAddr};
 
 extern crate alloc;
 
@@ -40,6 +41,13 @@ pub fn init(boot_info: &'static mut BootInfo) {
 
     screen::init(frame_buffer.buffer_mut(), info);
     logger::init(info);
+
+    let phys_mem_offset = boot_info.physical_memory_offset.as_mut().unwrap();
+    let phys_mem_offset = VirtAddr::new(*phys_mem_offset);
+    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_regions) };
+
+    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
     // unsafe { interrupts::PICS.lock().initialize() };
     // x86_64::instructions::interrupts::enable();

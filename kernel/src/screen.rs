@@ -200,7 +200,7 @@ pub fn _print(args: fmt::Arguments) {
     if let Some(screen) = SCREEN.get() {
         interrupts::without_interrupts(|| {
             let mut screen = screen.0.lock();
-            write!(screen, "{}", args).unwrap();
+            write!(screen, "{args}").unwrap();
         });
     }
 }
