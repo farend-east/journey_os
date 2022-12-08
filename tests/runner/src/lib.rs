@@ -54,7 +54,7 @@ pub fn run_test_kernel_on_uefi(out_gpt_path: &Path) {
     match child_output.status.code() {
         Some(33) => {}                     // success
         Some(35) => panic!("Test failed"), // success
-        other => panic!("Test failed with unexpected exit code `{:?}`", other),
+        other => panic!("Test failed with unexpected exit code `{other:?}`"),
     }
 }
 
@@ -76,7 +76,7 @@ pub fn run_test_kernel_on_bios(out_mbr_path: &Path) {
     match child_output.status.code() {
         Some(33) => {}                     // success
         Some(35) => panic!("Test failed"), // success
-        other => panic!("Test failed with unexpected exit code `{:?}`", other),
+        other => panic!("Test failed with unexpected exit code `{other:?}`"),
     }
 }
 
@@ -101,6 +101,6 @@ pub fn run_test_kernel_on_uefi_pxe(out_tftp_path: &Path) {
     match child_output.status.code() {
         Some(33) => {} // success
         Some(35) => panic!("Test failed"),
-        other => panic!("Test failed with unexpected exit code `{:?}`", other),
+        other => panic!("Test failed with unexpected exit code `{other:?}`"),
     }
 }
