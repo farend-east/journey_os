@@ -17,6 +17,10 @@ pub enum InterruptChip {
 pub fn init() {
     let cpuid = CpuId::new();
 
+    if let Some(id) = cpuid.get_processor_brand_string() {
+        log::info!("CPUID: {}", id.as_str());
+    }
+
     let interrupt_chip = cpuid
         .get_feature_info()
         .map(|finfo| {
