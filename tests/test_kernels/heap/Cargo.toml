@@ -1,5 +1,5 @@
 [package]
-name = "test_basic"
+name = "test_heap"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,6 +8,3 @@ edition = "2021"
 [dependencies]
 journey_kernel = { path = "../../../kernel" }
 bootloader_api = "0.11.0"
-x86_64 = "0.14.10"
-volatile = "0.4.5"
-lazy_static = "1.4.0"

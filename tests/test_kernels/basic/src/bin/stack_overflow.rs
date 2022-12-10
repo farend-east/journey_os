@@ -4,7 +4,6 @@
 
 use bootloader_api::{entry_point, BootInfo};
 use core::ops::{Deref, DerefMut};
-use core::panic::PanicInfo;
 use lazy_static::lazy_static;
 use x86_64::structures::idt::InterruptDescriptorTable;
 use x86_64::structures::idt::InterruptStackFrame;
@@ -22,9 +21,10 @@ fn kernel_main(_boot_info: &'static mut BootInfo) -> ! {
     exit_qemu(QemuExitCode::Failed);
 }
 
+#[cfg(not(test))]
 #[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    journey_kernel::test_panic_handler(info)
+fn panic(_info: &core::panic::PanicInfo) -> ! {
+    exit_qemu(QemuExitCode::Failed);
 }
 
 #[derive(Copy, Clone)]

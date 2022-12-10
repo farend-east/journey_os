@@ -22,3 +22,4 @@ ovmf-prebuilt = "0.1.0-alpha.1"
 [dev-dependencies]
 test_runner = { path = "tests/runner" }
 test_basic = { path = "tests/test_kernels/basic", artifact = "bin", target = "x86_64-unknown-none" }
+test_heap = { path = "tests/test_kernels/heap", artifact = "bin", target = "x86_64-unknown-none" }

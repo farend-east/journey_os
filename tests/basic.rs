@@ -16,8 +16,3 @@ fn should_panic() {
 fn stack_overflow() {
     run_test_kernel(env!("CARGO_BIN_FILE_TEST_BASIC_stack_overflow"));
 }
-
-#[test]
-fn heap_allocation() {
-    run_test_kernel(env!("CARGO_BIN_FILE_TEST_BASIC_heap_allocation"));
-}
