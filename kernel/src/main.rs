@@ -40,7 +40,7 @@ async fn async_number() -> u32 {
 
 async fn example_task() {
     let number = async_number().await;
-    log::info!("async number: {}", number);
+    println!("async number: {}", number);
 }
 
 /// This function is called on panic.

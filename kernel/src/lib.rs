@@ -30,6 +30,7 @@ pub const BOOTLOADER_CONFIG: BootloaderConfig = {
 };
 
 pub fn init(boot_info: &'static mut BootInfo) {
+    logger::init();
     gdt::init();
     interrupts::init_idt();
 
@@ -41,7 +42,6 @@ pub fn init(boot_info: &'static mut BootInfo) {
     let info = frame_buffer.info();
 
     screen::init(frame_buffer.buffer_mut(), info);
-    logger::init(info);
 
     let phys_mem_offset = boot_info.physical_memory_offset.as_mut().unwrap();
     let phys_mem_offset = VirtAddr::new(*phys_mem_offset);
@@ -82,12 +82,6 @@ pub fn exit_qemu(exit_code: QemuExitCode) -> ! {
     loop {
         hlt_loop();
     }
-}
-
-pub fn serial() -> uart_16550::SerialPort {
-    let mut port = unsafe { uart_16550::SerialPort::new(0x3F8) };
-    port.init();
-    port
 }
 
 pub trait Testable {

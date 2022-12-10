@@ -15,6 +15,10 @@ fn main() {
         cmd.arg("-drive")
             .arg(format!("format=raw,file={bios_path}"));
     }
+
+    cmd.arg("-serial").arg("stdio");
+    cmd.arg("-smp").arg("1");
+    cmd.arg("-m").arg("64M");
     let mut child = cmd.spawn().unwrap();
     child.wait().unwrap();
 }
