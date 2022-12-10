@@ -47,9 +47,9 @@ pub fn run_test_kernel_on_uefi(out_gpt_path: &Path) {
     strip_ansi_escapes::Writer::new(std::io::stderr())
         .write_all(&child_output.stderr)
         .unwrap();
-    strip_ansi_escapes::Writer::new(std::io::stderr())
-        .write_all(&child_output.stdout)
-        .unwrap();
+    // strip_ansi_escapes::Writer::new(std::io::stderr())
+    //     .write_all(&child_output.stdout)
+    //     .unwrap();
 
     match child_output.status.code() {
         Some(33) => {}                     // success
@@ -58,49 +58,49 @@ pub fn run_test_kernel_on_uefi(out_gpt_path: &Path) {
     }
 }
 
-pub fn run_test_kernel_on_bios(out_mbr_path: &Path) {
-    let mut run_cmd = Command::new("qemu-system-x86_64");
-    run_cmd
-        .arg("-drive")
-        .arg(format!("format=raw,file={}", out_mbr_path.display()));
-    run_cmd.args(QEMU_ARGS);
+// pub fn run_test_kernel_on_bios(out_mbr_path: &Path) {
+//     let mut run_cmd = Command::new("qemu-system-x86_64");
+//     run_cmd
+//         .arg("-drive")
+//         .arg(format!("format=raw,file={}", out_mbr_path.display()));
+//     run_cmd.args(QEMU_ARGS);
 
-    let child_output = run_cmd.output().unwrap();
-    strip_ansi_escapes::Writer::new(std::io::stderr())
-        .write_all(&child_output.stderr)
-        .unwrap();
-    strip_ansi_escapes::Writer::new(std::io::stderr())
-        .write_all(&child_output.stdout)
-        .unwrap();
+//     let child_output = run_cmd.output().unwrap();
+//     strip_ansi_escapes::Writer::new(std::io::stderr())
+//         .write_all(&child_output.stderr)
+//         .unwrap();
+//     strip_ansi_escapes::Writer::new(std::io::stderr())
+//         .write_all(&child_output.stdout)
+//         .unwrap();
 
-    match child_output.status.code() {
-        Some(33) => {}                     // success
-        Some(35) => panic!("Test failed"), // success
-        other => panic!("Test failed with unexpected exit code `{other:?}`"),
-    }
-}
+//     match child_output.status.code() {
+//         Some(33) => {}                     // success
+//         Some(35) => panic!("Test failed"), // success
+//         other => panic!("Test failed with unexpected exit code `{other:?}`"),
+//     }
+// }
 
-pub fn run_test_kernel_on_uefi_pxe(out_tftp_path: &Path) {
-    let mut run_cmd = Command::new("qemu-system-x86_64");
-    run_cmd.arg("-netdev").arg(format!(
-        "user,id=net0,net=192.168.17.0/24,tftp={},bootfile=bootloader,id=net0",
-        out_tftp_path.display()
-    ));
-    run_cmd.arg("-device").arg("virtio-net-pci,netdev=net0");
-    run_cmd.args(QEMU_ARGS);
-    run_cmd.arg("-bios").arg(ovmf_prebuilt::ovmf_pure_efi());
+// pub fn run_test_kernel_on_uefi_pxe(out_tftp_path: &Path) {
+//     let mut run_cmd = Command::new("qemu-system-x86_64");
+//     run_cmd.arg("-netdev").arg(format!(
+//         "user,id=net0,net=192.168.17.0/24,tftp={},bootfile=bootloader,id=net0",
+//         out_tftp_path.display()
+//     ));
+//     run_cmd.arg("-device").arg("virtio-net-pci,netdev=net0");
+//     run_cmd.args(QEMU_ARGS);
+//     run_cmd.arg("-bios").arg(ovmf_prebuilt::ovmf_pure_efi());
 
-    let child_output = run_cmd.output().unwrap();
-    strip_ansi_escapes::Writer::new(std::io::stderr())
-        .write_all(&child_output.stderr)
-        .unwrap();
-    strip_ansi_escapes::Writer::new(std::io::stderr())
-        .write_all(&child_output.stdout)
-        .unwrap();
+//     let child_output = run_cmd.output().unwrap();
+//     strip_ansi_escapes::Writer::new(std::io::stderr())
+//         .write_all(&child_output.stderr)
+//         .unwrap();
+//     strip_ansi_escapes::Writer::new(std::io::stderr())
+//         .write_all(&child_output.stdout)
+//         .unwrap();
 
-    match child_output.status.code() {
-        Some(33) => {} // success
-        Some(35) => panic!("Test failed"),
-        other => panic!("Test failed with unexpected exit code `{other:?}`"),
-    }
-}
+//     match child_output.status.code() {
+//         Some(33) => {} // success
+//         Some(35) => panic!("Test failed"),
+//         other => panic!("Test failed with unexpected exit code `{other:?}`"),
+//     }
+// }
