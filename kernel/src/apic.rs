@@ -1,4 +1,3 @@
-use acpi::AcpiHandler;
 use crossbeam_utils::atomic::AtomicCell;
 use raw_cpuid::CpuId;
 
@@ -40,21 +39,4 @@ pub fn init() {
         .expect("Could not retrieve CPUID feature info");
 
     INTERRUPT_CHIP.store(interrupt_chip);
-}
-
-#[derive(Clone)]
-struct JourneyAcpiHandler;
-
-impl AcpiHandler for JourneyAcpiHandler {
-    unsafe fn map_physical_region<T>(
-        &self,
-        _physical_address: usize,
-        _size: usize,
-    ) -> acpi::PhysicalMapping<Self, T> {
-        todo!()
-    }
-
-    fn unmap_physical_region<T>(_region: &acpi::PhysicalMapping<Self, T>) {
-        todo!()
-    }
 }
