@@ -17,3 +17,17 @@ To turn our compiled kernel into a bootable disk image, we need to link it with 
 [bootloader](https://github.com/fadhliazhari/bootloader)
 
 The bootloader for the OS. The original bootloader repo is [bootloader](https://github.com/rust-osdev/bootloader)
+
+## Running
+
+In order to run the os, you can call `cargo run`
+
+The runner application is using [Qemu](https://www.qemu.org/) to boot the os
+
+Runner:
+
+- Build Script
+  - Compile kernel
+  - Create disk image
+- Runner
+  - Run using QEMU
